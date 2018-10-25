@@ -1,13 +1,12 @@
-
-Datum array_to_mean(PG_FUNCTION_ARGS);
-PG_FUNCTION_INFO_V1(array_to_mean);
+Datum array_to_sum(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(array_to_sum);
 
 /**
- * Returns a mean from an array of numbers.
+ * Returns a sum from an array of numbers.
  * by Paul A. Jungwirth
  */
 Datum
-array_to_mean(PG_FUNCTION_ARGS)
+array_to_sum(PG_FUNCTION_ARGS)
 {
   // Our arguments:
   ArrayType *vals;
@@ -61,7 +60,7 @@ array_to_mean(PG_FUNCTION_ARGS)
       valsType != INT8OID &&
       valsType != FLOAT4OID &&
       valsType != FLOAT8OID) {
-    ereport(ERROR, (errmsg("Mean subject must be SMALLINT, INTEGER, BIGINT, REAL, or DOUBLE PRECISION values")));
+    ereport(ERROR, (errmsg("Sum subject must be SMALLINT, INTEGER, BIGINT, REAL, or DOUBLE PRECISION values")));
   }
 
   valsLength = (ARR_DIMS(vals))[0];
@@ -74,39 +73,35 @@ array_to_mean(PG_FUNCTION_ARGS)
   deconstruct_array(vals, valsType, valsTypeWidth, valsTypeByValue, valsTypeAlignmentCode,
 &valsContent, &valsNullFlags, &valsLength);
 
-  // Iterate through the contents and sum things up,
-  // then return the mean:
-  // Watch out for overflow:
-  // http://stackoverflow.com/questions/1930454/what-is-a-good-solution-for-calculating-an-average-where-the-sum-of-all-values-e/1934266#1934266
-
+  // Iterate through the contents and sum things up
   switch (valsType) {
     case INT2OID:
       for (i = 0; i < valsLength; i++) {
-        v += (DatumGetInt16(valsContent[i]) - v) / (i + 1);
+        v += (DatumGetInt16(valsContent[i]));
       }
       break;
     case INT4OID:
       for (i = 0; i < valsLength; i++) {
-        v += (DatumGetInt32(valsContent[i]) - v) / (i + 1);
+        v += (DatumGetInt32(valsContent[i]));
       }
       break;
     case INT8OID:
       for (i = 0; i < valsLength; i++) {
-        v += (DatumGetInt64(valsContent[i]) - v) / (i + 1);
+        v += (DatumGetInt64(valsContent[i]));
       }
       break;
     case FLOAT4OID:
       for (i = 0; i < valsLength; i++) {
-        v += (DatumGetFloat4(valsContent[i]) - v) / (i + 1);
+        v += (DatumGetFloat4(valsContent[i]));
       }
       break;
     case FLOAT8OID:
       for (i = 0; i < valsLength; i++) {
-        v += (DatumGetFloat8(valsContent[i]) - v) / (i + 1);
+        v += (DatumGetFloat8(valsContent[i]));
       }
       break;
     default:
-      ereport(ERROR, (errmsg("Mean subject must be SMALLINT, INTEGER, BIGINT, REAL, or DOUBLE PRECISION values")));
+      ereport(ERROR, (errmsg("Sum subject must be SMALLINT, INTEGER, BIGINT, REAL, or DOUBLE PRECISION values")));
       break;
   }
   PG_RETURN_FLOAT8(v);

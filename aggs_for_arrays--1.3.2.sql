@@ -27,6 +27,12 @@ RETURNS DOUBLE PRECISION
 AS 'aggs_for_arrays', 'array_to_median'
 LANGUAGE c IMMUTABLE;
 
+CREATE OR REPLACE FUNCTION
+array_to_sum(anyarray)
+RETURNS DOUBLE PRECISION
+AS 'aggs_for_arrays', 'array_to_sum'
+LANGUAGE c IMMUTABLE;
+
 CREATE OR REPLACE FUNCTION 
 sorted_array_to_median(anyarray)
 RETURNS DOUBLE PRECISION
